@@ -44,6 +44,18 @@ zinit wait lucid for \
 : zinit light zdharma/zui
 : zinit light zdharma/zplugin-crasis # broke for name change and for loop additions
 
+zinit wait lucid id-as='system-completions' as='completion' \
+    atclone='print Installing system completions...; \
+      mkdir --parents $ZPFX/funs; \
+      command cp --force /usr/share/zsh/functions/^_* $ZPFX/funs; \
+      zinit creinstall -q /usr/share/zsh/functions \
+      zinit creinstall -q /usr/share/zsh/site-functions \
+      zinit creinstall -q /usr/share/zsh/vendor-completions' \
+    atload='zicompinit; zicdreplay; \
+      fpath=( ${(u)fpath[@]:#/usr/share/zsh/*} ); \
+      fpath+=( $ZPFX/funs )' \
+    atpull="%atclone" run-atpull for zdharma/null
+
 zinit ice atclone'PYENV_ROOT="$PWD" ./libexec/pyenv init - > zpyenv.zsh' \
     atinit'export PYENV_ROOT="$PWD"' atpull"%atclone" \
     as'command' pick'bin/pyenv' src"zpyenv.zsh" nocompile'!'
